@@ -1,0 +1,12 @@
+{
+  "name": "podlove-feed-import",
+  "version": "0.0.1",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@extractus/feed-extractor": "^6.2.1"
+  }
+}
