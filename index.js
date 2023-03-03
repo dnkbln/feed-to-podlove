@@ -1,5 +1,10 @@
 import { extract } from '@extractus/feed-extractor'
+
+import pkg from 'lodash'
+const {get} = pkg
+
 import { config } from './config.js'
+import { getMediaLocation, getMediaLocationRedirect, getMediaName, getMediaType } from './media.js'
 
 let result = await extract(config.feed_url, {
         getExtraFeedFields: (feedData) => {
@@ -9,27 +14,33 @@ let result = await extract(config.feed_url, {
     }
 })
 
-
 let podcast = {
-    title: result.data.title || '',
-    subtitle: result.data.description || '',
-    summary: result.data['itunes:summary'] || '',
-    image: result.data.image?.url || '',
-    language: result.data.language || '',
+    title: get(result, 'data.title'),
+    subtitle: get(result, 'data.description'),
+    summary: get(result, 'data.itunes:summary'),
+    image: get(result, 'data.image.url'),
+    language: get(result, 'data.language'),
 }
 
 console.log(podcast)
 
-let episodes = result.data?.item?.map( (e) => {
+let episodes = result.data?.item?.map((e) => {
     const episode = {}
-    episode.title = e.title
-    episode.subtitle = e['itunes:subtitle']
-    episode.summary = e['itunes:summary']
-    episode.pubDate = e.pubDate
-    episode.media_url = e.enclosure['@_url']
-    episode.media_length = e.enclosure['@_length']
-    episode.media_type = e.enclosure['@_type']
+    episode.title = get(e, 'title')
+    episode.subtitle = get(e, 'itunes:subtitle')
+    episode.summary = get(e, 'itunes:summary')
+    episode.pubDate = get(e, 'pubDate')
+    episode.media_name = getMediaName(get(e, 'enclosure.@_url'))
+    episode.media_location = getMediaLocation(get(e, 'enclosure.@_url'))
+    episode.media_extension = getMediaType(get(e, 'enclosure.@_url'))
+    episode.media_url = get(e, 'enclosure.@_url')
+    episode.media_length = get(e, 'enclosure.@_length')
+    episode.media_type = get(e, 'enclosure.@_type')
     return episode
 })
+
+for (let i = 0; i < episodes.length; ++i) {
+    episodes[i].media_location_redirect = await getMediaLocationRedirect( episodes[i].media_location );
+}
 
 console.log(episodes)
