@@ -1,7 +1,7 @@
 # Doku zu Feed to Podlove
 
 ## Was macht das Programm?
-Das Programm liest einen Podcast-Feed und trägt die ermittelten Daten in eine Podlove-Instance
+Das Programm liest einen Podcast-Feed und trägt die ermittelten Daten in eine Podlove-Instance ein
 
 ## Wie starte ich das Programm?
 

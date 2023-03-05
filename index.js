@@ -5,6 +5,7 @@ const {get} = pkg
 
 import { config } from './config.js'
 import { getMediaLocation, getMediaLocationRedirect, getMediaName, getMediaType } from './media.js'
+import { createEpisode } from './episode.js'
 
 let result = await extract(config.feed_url, {
         getExtraFeedFields: (feedData) => {
@@ -24,7 +25,7 @@ let podcast = {
 
 console.log(podcast)
 
-let episodes = result.data?.item?.map((e) => {
+let episodes_back = result.data?.item?.map((e) => {
     const episode = {}
     episode.title = get(e, 'title')
     episode.subtitle = get(e, 'itunes:subtitle')
@@ -39,8 +40,13 @@ let episodes = result.data?.item?.map((e) => {
     return episode
 })
 
+let episodes = episodes_back.reverse()
+
 for (let i = 0; i < episodes.length; ++i) {
+    episodes[i].number = i + 1
     episodes[i].media_location_redirect = await getMediaLocationRedirect( episodes[i].media_location );
 }
 
-console.log(episodes)
+episodes.forEach(e => {
+    createEpisode(e)
+});
